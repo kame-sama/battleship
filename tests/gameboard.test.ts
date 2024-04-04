@@ -56,7 +56,7 @@ test('throw an exception when ships fully overlap', () => {
   const playerBoard = new Gameboard();
   playerBoard.placeShip('carrier', [0, 0], 'right');
   expect(() => playerBoard.placeShip('battleship', [0, 0], 'right')).toThrow(
-    'Collision ocurred',
+    'Invalid placement: Collision ocurred',
   );
 });
 
@@ -64,14 +64,14 @@ test('throw an exception when ships overlap', () => {
   const playerBoard = new Gameboard();
   playerBoard.placeShip('carrier', [0, 0], 'right');
   expect(() => playerBoard.placeShip('battleship', [3, 0], 'up')).toThrow(
-    'Collision ocurred',
+    'Invalid placement: Collision ocurred',
   );
 });
 
-test('throw an exception when ship breaks out board edge', () => {
+test('throw an exception when ship gets out of board', () => {
   const playerBoard = new Gameboard();
   expect(() => playerBoard.placeShip('carrier', [0, 0], 'up')).toThrow(
-    'Collision ocurred',
+    'Invalid placement: Got out of bound',
   );
 });
 
@@ -149,7 +149,7 @@ test('truthy when all ships are sunk', () => {
   expect(playerBoard.isAllShipsSunk()).toBeTruthy();
 });
 
-test('false when there are ships left', () => {
+test('falsy when there are ships left', () => {
   const playerBoard = new Gameboard();
   playerBoard.placeShip('carrier', [0, 0], 'right');
   playerBoard.placeShip('battleship', [1, 0], 'right');
@@ -157,4 +157,51 @@ test('false when there are ships left', () => {
   playerBoard.placeShip('submarine', [3, 0], 'right');
   playerBoard.placeShip('destroyer', [4, 0], 'right');
   expect(playerBoard.isAllShipsSunk()).toBeFalsy();
+});
+
+test('truthy when all ships are placed', () => {
+  const playerBoard = new Gameboard();
+  playerBoard.placeShip('carrier', [0, 0], 'right');
+  playerBoard.placeShip('battleship', [1, 0], 'right');
+  playerBoard.placeShip('cruiser', [2, 0], 'right');
+  playerBoard.placeShip('submarine', [3, 0], 'right');
+  playerBoard.placeShip('destroyer', [4, 0], 'right');
+  expect(playerBoard.isAllShipsPlaced()).toBeTruthy();
+});
+
+test('falsy when not all ships are placed', () => {
+  const playerBoard = new Gameboard();
+  playerBoard.placeShip('carrier', [0, 0], 'right');
+  expect(playerBoard.isAllShipsPlaced()).toBeFalsy();
+});
+
+test('do not able to say ready when not all ships are placed', () => {
+  const playerBoard = new Gameboard();
+  playerBoard.placeShip('carrier', [0, 0], 'right');
+  expect(() => playerBoard.ready()).toThrow(
+    'Should place all ships before game start',
+  );
+});
+
+test('able to say ready when all ships are placed', () => {
+  const playerBoard = new Gameboard();
+  playerBoard.placeShip('carrier', [0, 0], 'right');
+  playerBoard.placeShip('battleship', [1, 0], 'right');
+  playerBoard.placeShip('cruiser', [2, 0], 'right');
+  playerBoard.placeShip('submarine', [3, 0], 'right');
+  playerBoard.placeShip('destroyer', [4, 0], 'right');
+  expect(playerBoard.ready()).toEqual(playerBoard);
+});
+
+test('do not able to move ships when game is started', () => {
+  const playerBoard = new Gameboard();
+  playerBoard.placeShip('carrier', [0, 0], 'right');
+  playerBoard.placeShip('battleship', [1, 0], 'right');
+  playerBoard.placeShip('cruiser', [2, 0], 'right');
+  playerBoard.placeShip('submarine', [3, 0], 'right');
+  playerBoard.placeShip('destroyer', [4, 0], 'right');
+  playerBoard.ready();
+  expect(() => playerBoard.placeShip('destroyer', [5, 0], 'up')).toThrow(
+    "Can't move ships at this game stage",
+  );
 });

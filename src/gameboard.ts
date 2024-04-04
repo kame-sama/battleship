@@ -11,13 +11,15 @@ const NAME_LENGTH_MAP = {
 
 export default class Gameboard {
   board: Board;
+  #isReady: boolean;
   #ships: Ships;
   #shipCoordMap: Map<ShipName, CoordPoint[]>;
   #shipsSunk: number;
 
   constructor() {
-    this.board = Gameboard.#createEmptyBoard();
-    this.#ships = Gameboard.#createShipsObject();
+    this.board = Gameboard.#initializeBoard();
+    this.#isReady = false;
+    this.#ships = Gameboard.#initializeShips();
     this.#shipCoordMap = new Map();
     this.#shipsSunk = 0;
   }
@@ -30,7 +32,7 @@ export default class Gameboard {
     return this.#shipsSunk === 5;
   }
 
-  isCollisionOrBreakOut(
+  isCollision(
     shipName: ShipName,
     startingPoint: CoordPoint,
     direction: Direction,
@@ -38,13 +40,7 @@ export default class Gameboard {
     let [row, col] = startingPoint;
 
     for (let i = 0; i < NAME_LENGTH_MAP[shipName]; i++) {
-      if (
-        row > BOARD_SIZE - 1 ||
-        row < 0 ||
-        col > BOARD_SIZE - 1 ||
-        col < 0 ||
-        (this.board[row][col] !== '' && this.board[row][col] !== shipName)
-      ) {
+      if (this.board[row][col] !== '' && this.board[row][col] !== shipName) {
         return true;
       }
 
@@ -62,13 +58,45 @@ export default class Gameboard {
     return false;
   }
 
+  isOutOfBounds(
+    shipName: ShipName,
+    startingPoint: CoordPoint,
+    direction: Direction,
+  ): boolean {
+    let [row, col] = startingPoint;
+
+    if (direction === 'up') {
+      row -= NAME_LENGTH_MAP[shipName] - 1;
+    } else if (direction === 'right') {
+      col += NAME_LENGTH_MAP[shipName] - 1;
+    } else if (direction === 'down') {
+      row += NAME_LENGTH_MAP[shipName] - 1;
+    } else {
+      col -= NAME_LENGTH_MAP[shipName] - 1;
+    }
+
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+      return true;
+    }
+
+    return false;
+  }
+
   placeShip(
     shipName: ShipName,
     startingPoint: CoordPoint,
     direction: Direction,
   ): Gameboard {
-    if (this.isCollisionOrBreakOut(shipName, startingPoint, direction)) {
-      throw new Error('Collision ocurred');
+    if (this.#isReady) {
+      throw new Error("Can't move ships at this game stage");
+    }
+
+    if (this.isOutOfBounds(shipName, startingPoint, direction)) {
+      throw new Error('Invalid placement: Got out of bound');
+    }
+
+    if (this.isCollision(shipName, startingPoint, direction)) {
+      throw new Error('Invalid placement: Collision ocurred');
     }
 
     if (this.#shipCoordMap.has(shipName)) {
@@ -124,13 +152,21 @@ export default class Gameboard {
     return 'hit';
   }
 
-  static #createEmptyBoard(): Board {
+  ready(): Gameboard {
+    if (!this.isAllShipsPlaced()) {
+      throw new Error('Should place all ships before game start');
+    }
+    this.#isReady = true;
+    return this;
+  }
+
+  static #initializeBoard(): Board {
     return new Array(BOARD_SIZE)
       .fill('')
       .map(() => new Array(BOARD_SIZE).fill(''));
   }
 
-  static #createShipsObject(): Ships {
+  static #initializeShips(): Ships {
     const ships = {} as Ships;
 
     for (const [shipName, shipLength] of Object.entries(NAME_LENGTH_MAP)) {
