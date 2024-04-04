@@ -2,11 +2,11 @@ export function dragAndDrop(e: MouseEvent) {
   const tar = e.target;
   if (tar instanceof HTMLDivElement) {
     if (
-      tar.id === 'carrier' ||
-      tar.id === 'battleship' ||
-      tar.id === 'cruiser' ||
-      tar.id === 'submarine' ||
-      tar.id === 'destroyer'
+      tar.classList.contains('carrier') ||
+      tar.classList.contains('battleship') ||
+      tar.classList.contains('cruiser') ||
+      tar.classList.contains('submarine') ||
+      tar.classList.contains('destroyer')
     ) {
       const clone = tar.cloneNode(true) as HTMLDivElement;
       clone.style.position = 'absolute';
@@ -61,11 +61,11 @@ function handleMouseMove(e: MouseEvent) {
   const tar = e.target;
   if (tar instanceof HTMLDivElement) {
     if (
-      tar.id === 'carrier' ||
-      tar.id === 'battleship' ||
-      tar.id === 'cruiser' ||
-      tar.id === 'submarine' ||
-      tar.id === 'destroyer'
+      tar.classList.contains('carrier') ||
+      tar.classList.contains('battleship') ||
+      tar.classList.contains('cruiser') ||
+      tar.classList.contains('submarine') ||
+      tar.classList.contains('destroyer')
     ) {
       moveAt(e.pageX, e.pageY, tar);
     }

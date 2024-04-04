@@ -13,7 +13,6 @@ const submarine: HTMLButtonElement = document.querySelector('.submarine')!;
 const destroyer: HTMLButtonElement = document.querySelector('.destroyer')!;
 const start: HTMLButtonElement = document.querySelector('#start')!;
 const restart: HTMLButtonElement = document.querySelector('#restart')!;
-const reset: HTMLButtonElement = document.querySelector('#reset')!;
 
 let player1 = new Player('Player');
 ui.renderBoard(player1.gameboard.board, player, 'player');
@@ -82,7 +81,7 @@ player.addEventListener('click', (e) => {
     const startingPoint = ui.readCoords(e.target);
     try {
       player1.gameboard.placeShip(shipName, startingPoint, direction);
-      message.textContent = '';
+      // message.textContent = '';
       ui.renderBoard(player1.gameboard.board, player, 'player');
       if (shipName === 'carrier') {
         carrier.classList.add('placed');
@@ -97,7 +96,7 @@ player.addEventListener('click', (e) => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        message.textContent = error.message;
+        message.innerHTML += `${error.message}<br>`;
       }
     }
 
@@ -111,10 +110,10 @@ start.addEventListener('click', () => {
   try {
     player1.gameboard.ready();
     isGameStarted = true;
-    message.textContent = 'Game started';
+    message.innerHTML += 'Game started<br>';
   } catch (error) {
     if (error instanceof Error) {
-      message.textContent = error.message;
+      message.innerHTML += `${error.message}<br>`;
     }
   }
 });
@@ -125,21 +124,21 @@ enemy.addEventListener('click', (e) => {
     const coords = ui.readCoords(e.target);
     try {
       player1.makeMove(coords);
-      message.textContent = '';
+      // message.textContent = '';
     } catch (error) {
       if (error instanceof Error) {
-        message.textContent = error.message;
+        message.innerHTML += `${error.message}<br>`;
         return;
       }
     }
 
     const attackResult = player2.gameboard.receiveAttack(coords);
     ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
-    message.textContent = attackResult;
+    message.innerHTML += `${attackResult}<br>`;
     player1.storeMove(coords, attackResult);
 
     if (player2.gameboard.isAllShipsSunk()) {
-      message.textContent = 'Player 1 WINs';
+      message.innerHTML += 'Player WINs<br>';
       isGameStarted = false;
       isGameOver = true;
     }
@@ -149,7 +148,7 @@ enemy.addEventListener('click', (e) => {
     );
     ui.renderBoard(player1.gameboard.board, player, 'player');
     if (player1.gameboard.isAllShipsSunk()) {
-      message.textContent = 'Bot WINs';
+      message.innerHTML += 'Bot WINs<br>';
       isGameStarted = false;
       isGameOver = true;
     }
@@ -162,4 +161,5 @@ restart.addEventListener('click', () => {
   ui.renderBoard(player1.gameboard.board, player, 'player');
   player2 = new Bot();
   ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
+  message.innerHTML = '';
 });
