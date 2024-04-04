@@ -1,3 +1,4 @@
+import '../assets/styles.css';
 import Bot from './bot';
 import Player from './player';
 import * as ui from './ui-controller';
@@ -5,13 +6,14 @@ import * as ui from './ui-controller';
 const player: HTMLDivElement = document.querySelector('#player')!;
 const enemy: HTMLDivElement = document.querySelector('#enemy')!;
 const message: HTMLDivElement = document.querySelector('#message')!;
-const carrier: HTMLButtonElement = document.querySelector('#carrier')!;
-const battleship: HTMLButtonElement = document.querySelector('#battleship')!;
-const cruiser: HTMLButtonElement = document.querySelector('#cruiser')!;
-const submarine: HTMLButtonElement = document.querySelector('#submarine')!;
-const destroyer: HTMLButtonElement = document.querySelector('#destroyer')!;
-const ready: HTMLButtonElement = document.querySelector('#ready')!;
+const carrier: HTMLButtonElement = document.querySelector('.carrier')!;
+const battleship: HTMLButtonElement = document.querySelector('.battleship')!;
+const cruiser: HTMLButtonElement = document.querySelector('.cruiser')!;
+const submarine: HTMLButtonElement = document.querySelector('.submarine')!;
+const destroyer: HTMLButtonElement = document.querySelector('.destroyer')!;
+const start: HTMLButtonElement = document.querySelector('#start')!;
 const restart: HTMLButtonElement = document.querySelector('#restart')!;
+const reset: HTMLButtonElement = document.querySelector('#reset')!;
 
 let player1 = new Player('Player');
 ui.renderBoard(player1.gameboard.board, player, 'player');
@@ -104,7 +106,7 @@ player.addEventListener('click', (e) => {
   }
 });
 
-ready.addEventListener('click', () => {
+start.addEventListener('click', () => {
   if (isGameOver) return;
   try {
     player1.gameboard.ready();
