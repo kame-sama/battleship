@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Battleship</title>
     <style>
-      .boards {
+      .container {
         display: flex;
-        gap: 1rem;
+        gap: 20px;
+      }
+
+      .boards {
+        /* display: flex;
+        justify-content: center; */
+        display: grid;
+        grid-template-columns: max-content max-content;
+        gap: 20px;
       }
 
       .board {
@@ -47,29 +55,81 @@
       .miss::after {
         background-color: yellow;
       }
+
+      .ships {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 20px;
+      }
+
+      #carrier,
+      #battleship,
+      #cruiser,
+      #submarine,
+      #destroyer {
+        display: flex;
+      }
+
+      #carrier > *,
+      #battleship > *,
+      #cruiser > *,
+      #submarine > *,
+      #destroyer > * {
+        width: 40px;
+        height: 40px;
+        box-sizing: border-box;
+        border: 1px solid yellow;
+        pointer-events: none;
+      }
+
+      .placed {
+        background-color: gray;
+      }
     </style>
   </head>
   <body>
-    <div class="game-mode-buttons">
-      <button id="single-player">Single Player</button>
-      <button id="multi-player">Multi Player</button>
-    </div>
     <div id="message"></div>
-    <div class="boards">
-      <div id="player" class="board"></div>
-      <div id="enemy" class="board"></div>
+    <div class="container">
+      <div class="ships">
+        <div id="carrier" class="ship">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div id="battleship" class="ship">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div id="cruiser" class="ship">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div id="submarine" class="ship">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div id="destroyer" class="ship">
+          <div></div>
+        </div>
+      </div>
+      <div class="boards">
+        <div>Player</div>
+        <div>Bot</div>
+        <div id="player" class="board"></div>
+        <div id="enemy" class="board"></div>
+      </div>
     </div>
-    <div class="ships">
-      <button id="carrier">Carrier</button>
-      <button id="battleship">Battleship</button>
-      <button id="cruiser">Cruiser</button>
-      <button id="submarine">Submarine</button>
-      <button id="destroyer">Destroyer</button>
-    </div>
+
     <div class="buttons">
       <button id="ready">Ready</button>
       <button id="restart">Restart</button>
-      <button id="change-dir">Up</button>
     </div>
     <script type="module" src="src/main.ts"></script>
   </body>

@@ -1,98 +1,106 @@
 import Bot from './bot';
 import Player from './player';
-import UIController from './ui-controller';
+import * as ui from './ui-controller';
 
-const single: HTMLButtonElement = document.querySelector('#single-player')!;
-// const multi: HTMLButtonElement = document.querySelector('#multi-player')!;
-const message: HTMLDivElement = document.querySelector('#message')!;
 const player: HTMLDivElement = document.querySelector('#player')!;
 const enemy: HTMLDivElement = document.querySelector('#enemy')!;
+const message: HTMLDivElement = document.querySelector('#message')!;
 const carrier: HTMLButtonElement = document.querySelector('#carrier')!;
 const battleship: HTMLButtonElement = document.querySelector('#battleship')!;
 const cruiser: HTMLButtonElement = document.querySelector('#cruiser')!;
 const submarine: HTMLButtonElement = document.querySelector('#submarine')!;
 const destroyer: HTMLButtonElement = document.querySelector('#destroyer')!;
 const ready: HTMLButtonElement = document.querySelector('#ready')!;
-const changeDir: HTMLButtonElement = document.querySelector('#change-dir')!;
 const restart: HTMLButtonElement = document.querySelector('#restart')!;
 
-const ui = new UIController({ player, enemy });
+let player1 = new Player('Player');
+ui.renderBoard(player1.gameboard.board, player, 'player');
+let player2 = new Bot();
+ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
 
-let mode: GameMode;
-let player1: Player;
-let player2: Bot | Player;
+let shipName: ShipName | undefined;
+let direction: Direction = 'right';
 let isGameStarted = false;
 let isGameOver = false;
 
-single.addEventListener('click', () => {
-  mode = 'single-player';
-  player1 = new Player('Player 1');
-  ui.renderPlayerBoard(player1.gameboard.board);
-  player2 = new Bot();
-  ui.renderEnemyBoard(player2.gameboard.board);
-});
+carrier.addEventListener('mousedown', ui.dragAndDrop);
+battleship.addEventListener('mousedown', ui.dragAndDrop);
+cruiser.addEventListener('mousedown', ui.dragAndDrop);
+submarine.addEventListener('mousedown', ui.dragAndDrop);
+destroyer.addEventListener('mousedown', ui.dragAndDrop);
 
-let shipName: ShipName | undefined;
-let direction: Direction = 'up';
-
-carrier.addEventListener('click', () => {
+carrier.addEventListener('mousedown', () => {
   shipName = 'carrier';
 });
 
-battleship.addEventListener('click', () => {
+battleship.addEventListener('mousedown', () => {
   shipName = 'battleship';
 });
 
-cruiser.addEventListener('click', () => {
+cruiser.addEventListener('mousedown', () => {
   shipName = 'cruiser';
 });
 
-submarine.addEventListener('click', () => {
+submarine.addEventListener('mousedown', () => {
   shipName = 'submarine';
 });
 
-destroyer.addEventListener('click', () => {
+destroyer.addEventListener('mousedown', () => {
   shipName = 'destroyer';
 });
 
-changeDir.addEventListener('click', () => {
-  switch (changeDir.textContent) {
-    case 'Up':
-      changeDir.textContent = 'Right';
-      direction = 'right';
-      break;
-    case 'Right':
-      changeDir.textContent = 'Down';
-      direction = 'down';
-      break;
-    case 'Down':
-      changeDir.textContent = 'Left';
-      direction = 'left';
-      break;
-    default:
-      changeDir.textContent = 'Up';
-      direction = 'up';
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'r') {
+    switch (direction) {
+      case 'right':
+        direction = 'down';
+        break;
+      case 'down':
+        direction = 'left';
+        break;
+      case 'left':
+        direction = 'up';
+        break;
+      default:
+        direction = 'right';
+        break;
+    }
   }
 });
 
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'r') changeDir.click();
+document.body.addEventListener('click', () => {
+  shipName = undefined;
+  direction = 'right';
 });
 
 player.addEventListener('click', (e) => {
+  e.stopPropagation();
   if (isGameOver) return;
   if (e.target instanceof HTMLDivElement && shipName && direction) {
     const startingPoint = ui.readCoords(e.target);
     try {
       player1.gameboard.placeShip(shipName, startingPoint, direction);
       message.textContent = '';
-      shipName = undefined;
-      ui.renderPlayerBoard(player1.gameboard.board);
+      ui.renderBoard(player1.gameboard.board, player, 'player');
+      if (shipName === 'carrier') {
+        carrier.classList.add('placed');
+      } else if (shipName === 'battleship') {
+        battleship.classList.add('placed');
+      } else if (shipName === 'cruiser') {
+        cruiser.classList.add('placed');
+      } else if (shipName === 'submarine') {
+        submarine.classList.add('placed');
+      } else if (shipName === 'destroyer') {
+        destroyer.classList.add('placed');
+      }
     } catch (error) {
       if (error instanceof Error) {
         message.textContent = error.message;
       }
     }
+
+    shipName = undefined;
+    direction = 'right';
   }
 });
 
@@ -124,7 +132,7 @@ enemy.addEventListener('click', (e) => {
     }
 
     const attackResult = player2.gameboard.receiveAttack(coords);
-    ui.renderEnemyBoard(player2.gameboard.board);
+    ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
     message.textContent = attackResult;
     player1.storeMove(coords, attackResult);
 
@@ -134,26 +142,22 @@ enemy.addEventListener('click', (e) => {
       isGameOver = true;
     }
 
-    if (mode === 'single-player' && player2 instanceof Bot) {
-      player1.gameboard.receiveAttack(
-        player2.makeMove(player2.getRandomValidMove()),
-      );
-      ui.renderPlayerBoard(player1.gameboard.board);
-      if (player1.gameboard.isAllShipsSunk()) {
-        message.textContent = 'Bot WINs';
-        isGameStarted = false;
-        isGameOver = true;
-      }
+    player1.gameboard.receiveAttack(
+      player2.makeMove(player2.getRandomValidMove()),
+    );
+    ui.renderBoard(player1.gameboard.board, player, 'player');
+    if (player1.gameboard.isAllShipsSunk()) {
+      message.textContent = 'Bot WINs';
+      isGameStarted = false;
+      isGameOver = true;
     }
   }
 });
 
 restart.addEventListener('click', () => {
-  if (isGameOver) {
-    isGameOver = false;
-    player1 = new Player('Player 1');
-    ui.renderPlayerBoard(player1.gameboard.board);
-    player2 = new Bot();
-    ui.renderEnemyBoard(player2.gameboard.board);
-  }
+  isGameOver = false;
+  player1 = new Player('Player');
+  ui.renderBoard(player1.gameboard.board, player, 'player');
+  player2 = new Bot();
+  ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
 });
