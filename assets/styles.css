@@ -121,6 +121,7 @@ main {
 
 .ships,
 .log {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -177,6 +178,9 @@ main {
 }
 
 button {
+  appearance: none;
+  background-color: var(--var-board-clr);
+  color: var(--var-background-clr);
   font: inherit;
   width: 100px;
   padding: 0.25rem;
@@ -189,4 +193,28 @@ button:disabled {
 
 a {
   color: inherit;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  top: -4px;
+}
+
+svg {
+  pointer-events: none;
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: var(--var-foreground-clr);
+}
+
+.controls {
+  position: absolute;
+  bottom: 0;
+}
+
+.controls > * {
+  display: flex;
 }
