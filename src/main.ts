@@ -151,8 +151,6 @@ enemy.addEventListener('click', (e) => {
       );
     }
 
-    player1.storeMove(coords, attackResult);
-
     if (player2.gameboard.isAllShipsSunk()) {
       logMessage(
         `<span style="color: var(--var-ship-clr)">
@@ -164,9 +162,10 @@ enemy.addEventListener('click', (e) => {
       return;
     }
 
-    attackResult = player1.gameboard.receiveAttack(
-      player2.makeMove(player2.getRandomValidMove()),
-    );
+    const botMove = player2.getRandomValidMove();
+    attackResult = player1.gameboard.receiveAttack(player2.makeMove(botMove));
+    player2.storeHit(botMove, attackResult);
+
     ui.renderBoard(player1.gameboard.board, player, 'player');
     if (attackResult === 'hit' || attackResult === 'miss') {
       logMessage(

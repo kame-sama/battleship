@@ -3,25 +3,20 @@ import Gameboard from './gameboard';
 export default class Player {
   name: string;
   gameboard: Gameboard;
-  moves: Map<CoordPointKey, AttackResult>;
+  moves: Set<CoordPointKey>;
 
   constructor(name: string) {
     this.name = name;
     this.gameboard = new Gameboard();
-    this.moves = new Map();
+    this.moves = new Set();
   }
 
   makeMove(move: CoordPoint): CoordPoint {
-    const key = move.toString();
+    const key = JSON.stringify(move);
     if (this.moves.has(key)) {
       throw new Error("Can't play the same move twice");
     }
-
+    this.moves.add(key);
     return move;
-  }
-
-  storeMove(move: CoordPoint, attackResult: AttackResult): void {
-    const key = move.toString();
-    this.moves.set(key, attackResult);
   }
 }

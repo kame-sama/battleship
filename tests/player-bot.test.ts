@@ -16,7 +16,6 @@ test('player can make a move', () => {
 test('throw an exception when trying to make the same move', () => {
   const player1 = new Player('Player1');
   player1.makeMove([0, 0]);
-  player1.storeMove([0, 0], 'hit');
   expect(() => player1.makeMove([0, 0])).toThrow(
     "Can't play the same move twice",
   );
