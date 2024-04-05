@@ -114,6 +114,11 @@ start.addEventListener('click', () => {
     message.innerHTML = '';
     logMessage('Game started');
     start.toggleAttribute('disabled');
+    carrier.removeEventListener('mousedown', ui.dragAndDrop);
+    battleship.removeEventListener('mousedown', ui.dragAndDrop);
+    cruiser.removeEventListener('mousedown', ui.dragAndDrop);
+    submarine.removeEventListener('mousedown', ui.dragAndDrop);
+    destroyer.removeEventListener('mousedown', ui.dragAndDrop);
   } catch (error) {
     if (error instanceof Error) {
       logMessage(error.message);
@@ -209,4 +214,14 @@ restart.addEventListener('click', () => {
   cruiser.classList.remove('placed');
   submarine.classList.remove('placed');
   destroyer.classList.remove('placed');
+  carrier.removeEventListener('mousedown', ui.dragAndDrop);
+  battleship.removeEventListener('mousedown', ui.dragAndDrop);
+  cruiser.removeEventListener('mousedown', ui.dragAndDrop);
+  submarine.removeEventListener('mousedown', ui.dragAndDrop);
+  destroyer.removeEventListener('mousedown', ui.dragAndDrop);
+  carrier.addEventListener('mousedown', ui.dragAndDrop);
+  battleship.addEventListener('mousedown', ui.dragAndDrop);
+  cruiser.addEventListener('mousedown', ui.dragAndDrop);
+  submarine.addEventListener('mousedown', ui.dragAndDrop);
+  destroyer.addEventListener('mousedown', ui.dragAndDrop);
 });
