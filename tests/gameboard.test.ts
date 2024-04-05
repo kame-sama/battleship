@@ -71,7 +71,7 @@ test('throw an exception when ships overlap', () => {
 test('throw an exception when ship gets out of board', () => {
   const playerBoard = new Gameboard();
   expect(() => playerBoard.placeShip('carrier', [0, 0], 'up')).toThrow(
-    'Invalid placement: Got out of bound',
+    'Invalid placement: Out of bounds',
   );
 });
 
@@ -118,7 +118,7 @@ test('handles multiple hits', () => {
 
 test('handles destroyer sunk', () => {
   const playerBoard = new Gameboard().placeShip('destroyer', [0, 0], 'right');
-  expect(playerBoard.receiveAttack([0, 0])).toBe('sunk');
+  expect(playerBoard.receiveAttack([0, 0])).toBe('destroyer sunk');
 });
 
 test('handles carrier sunk', () => {
@@ -127,7 +127,7 @@ test('handles carrier sunk', () => {
   expect(playerBoard.receiveAttack([0, 1])).toBe('hit');
   expect(playerBoard.receiveAttack([0, 2])).toBe('hit');
   expect(playerBoard.receiveAttack([0, 3])).toBe('hit');
-  expect(playerBoard.receiveAttack([0, 4])).toBe('sunk');
+  expect(playerBoard.receiveAttack([0, 4])).toBe('carrier sunk');
 });
 
 test('truthy when all ships are sunk', () => {

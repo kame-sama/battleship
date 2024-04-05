@@ -77,7 +77,7 @@ export function readCoords(cellDiv: HTMLDivElement): CoordPoint {
     const coords = cellDiv.dataset.coords;
     return [parseInt(coords[0]), parseInt(coords[1])];
   }
-  throw new Error('Invalid input: expect HTMLDivElement of class "cell"');
+  throw new Error('Something went wrong');
 }
 
 export function renderBoard(
@@ -104,5 +104,20 @@ export function renderBoard(
 
       target.appendChild(cellDiv);
     });
+  });
+}
+
+export function createMessageLogger(tar: HTMLElement) {
+  return function (msg: string) {
+    tar.innerHTML += `${msg}<br>`;
+    scrollToBottom(tar);
+  };
+}
+
+function scrollToBottom(tar: HTMLElement) {
+  tar.scrollTo({
+    top: tar.scrollHeight,
+    left: 0,
+    behavior: 'smooth',
   });
 }

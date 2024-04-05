@@ -14,6 +14,8 @@ const destroyer: HTMLButtonElement = document.querySelector('.destroyer')!;
 const start: HTMLButtonElement = document.querySelector('#start')!;
 const restart: HTMLButtonElement = document.querySelector('#restart')!;
 
+const logMessage = ui.createMessageLogger(message);
+
 let player1 = new Player('Player');
 ui.renderBoard(player1.gameboard.board, player, 'player');
 let player2 = new Bot();
@@ -81,7 +83,6 @@ player.addEventListener('click', (e) => {
     const startingPoint = ui.readCoords(e.target);
     try {
       player1.gameboard.placeShip(shipName, startingPoint, direction);
-      // message.textContent = '';
       ui.renderBoard(player1.gameboard.board, player, 'player');
       if (shipName === 'carrier') {
         carrier.classList.add('placed');
@@ -96,7 +97,7 @@ player.addEventListener('click', (e) => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        message.innerHTML += `${error.message}<br>`;
+        logMessage(error.message);
       }
     }
 
@@ -110,10 +111,12 @@ start.addEventListener('click', () => {
   try {
     player1.gameboard.ready();
     isGameStarted = true;
-    message.innerHTML += 'Game started<br>';
+    message.innerHTML = '';
+    logMessage('Game started');
+    start.toggleAttribute('disabled');
   } catch (error) {
     if (error instanceof Error) {
-      message.innerHTML += `${error.message}<br>`;
+      logMessage(error.message);
     }
   }
 });
@@ -124,31 +127,68 @@ enemy.addEventListener('click', (e) => {
     const coords = ui.readCoords(e.target);
     try {
       player1.makeMove(coords);
-      // message.textContent = '';
     } catch (error) {
       if (error instanceof Error) {
-        message.innerHTML += `${error.message}<br>`;
+        logMessage(error.message);
         return;
       }
     }
 
-    const attackResult = player2.gameboard.receiveAttack(coords);
+    let attackResult = player2.gameboard.receiveAttack(coords);
     ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
-    message.innerHTML += `${attackResult}<br>`;
+    if (attackResult === 'hit' || attackResult === 'miss') {
+      logMessage(
+        `<span style="color: var(--var-ship-clr)">
+          Player:
+        </span>
+        ${attackResult}`,
+      );
+    } else {
+      logMessage(
+        `<span style="color: var(--var-edge-clr)">
+          Bot's ${attackResult}
+        </span>`,
+      );
+    }
+
     player1.storeMove(coords, attackResult);
 
     if (player2.gameboard.isAllShipsSunk()) {
-      message.innerHTML += 'Player WINs<br>';
+      logMessage(
+        `<span style="color: var(--var-ship-clr)">
+          Player WINS!
+        </span>`,
+      );
       isGameStarted = false;
       isGameOver = true;
+      return;
     }
 
-    player1.gameboard.receiveAttack(
+    attackResult = player1.gameboard.receiveAttack(
       player2.makeMove(player2.getRandomValidMove()),
     );
     ui.renderBoard(player1.gameboard.board, player, 'player');
+    if (attackResult === 'hit' || attackResult === 'miss') {
+      logMessage(
+        `<span style="color: var(--var-neutral-clr)">
+          Bot:
+        </span>
+        ${attackResult}`,
+      );
+    } else {
+      logMessage(
+        `<span style="color: var(--var-edge-clr)">
+          Player's ${attackResult}
+        </span>`,
+      );
+    }
+
     if (player1.gameboard.isAllShipsSunk()) {
-      message.innerHTML += 'Bot WINs<br>';
+      logMessage(
+        `<span style="color: var(--var-neutral-clr)">
+          Bot WINS!
+        </span>`,
+      );
       isGameStarted = false;
       isGameOver = true;
     }
@@ -162,4 +202,12 @@ restart.addEventListener('click', () => {
   player2 = new Bot();
   ui.renderBoard(player2.gameboard.board, enemy, 'enemy');
   message.innerHTML = '';
+  if (start.disabled) {
+    start.toggleAttribute('disabled');
+  }
+  carrier.classList.remove('placed');
+  battleship.classList.remove('placed');
+  cruiser.classList.remove('placed');
+  submarine.classList.remove('placed');
+  destroyer.classList.remove('placed');
 });

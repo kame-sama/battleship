@@ -92,7 +92,7 @@ export default class Gameboard {
     }
 
     if (this.isOutOfBounds(shipName, startingPoint, direction)) {
-      throw new Error('Invalid placement: Got out of bound');
+      throw new Error('Invalid placement: Out of bounds');
     }
 
     if (this.isCollision(shipName, startingPoint, direction)) {
@@ -146,7 +146,7 @@ export default class Gameboard {
     this.board[row][col] = 'hit';
     if (this.#ships[shipName].isSunk()) {
       this.#shipsSunk++;
-      return 'sunk';
+      return `${shipName} sunk`;
     }
 
     return 'hit';
