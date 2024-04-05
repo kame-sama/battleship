@@ -28,13 +28,13 @@ Welcome to Battleship, a classic game where you can battle against a computer op
 4.  Run `npm run dev` to start the development server.
 5.  Go to your localhost server to play the game.
 
-### Features
+## Features
 
 - Drag and drop functionality for placing ships.
 - Rotation of ships using the "r" key.
 - Feedback for successful hits and misses.
 
-### Acknowledgement
+## Acknowledgement
 
 - Inspired by [The Odin Project](https://www.theodinproject.com/lessons/node-path-javascript-battleship).
 - Favicon crated by [Freepik - Flaticon](https://www.flaticon.com/free-icons/ship).
